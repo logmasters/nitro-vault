@@ -1,21 +1,31 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { logger } from "@/utils/logger";
 
 export const StatsCounter = () => {
   const [stats, setStats] = useState({
-    totalRewards: 15420,
-    activeUsers: 1247,
-    rewardsToday: 342
+    totalRewards: 0,
+    activeUsers: 0,
+    rewardsToday: 0
   });
 
   useEffect(() => {
-    // Simulate live stats updates
+    // Initialize with saved stats or default values
+    const initialStats = logger.getStats();
+    setStats({
+      totalRewards: initialStats.totalRewards || Math.floor(Math.random() * 5000) + 10000,
+      activeUsers: initialStats.activeUsers || Math.floor(Math.random() * 500) + 800,
+      rewardsToday: initialStats.rewardsToday || Math.floor(Math.random() * 100) + 200
+    });
+
+    // Update stats from logger every 5 seconds
     const interval = setInterval(() => {
+      const currentStats = logger.getStats();
       setStats(prev => ({
-        totalRewards: prev.totalRewards + Math.floor(Math.random() * 3),
-        activeUsers: prev.activeUsers + Math.floor(Math.random() * 5) - 2,
-        rewardsToday: prev.rewardsToday + Math.floor(Math.random() * 2)
+        totalRewards: Math.max(prev.totalRewards, currentStats.totalRewards || prev.totalRewards),
+        activeUsers: Math.max(1, currentStats.activeUsers || prev.activeUsers),
+        rewardsToday: Math.max(prev.rewardsToday, currentStats.rewardsToday || prev.rewardsToday)
       }));
     }, 5000);
 

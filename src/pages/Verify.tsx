@@ -5,12 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Shield, AlertTriangle, Users, Gift } from "lucide-react";
+import { DiscordAuthButton } from "@/components/DiscordAuthButton";
+import { VerificationTasks } from "@/components/VerificationTasks";
 
 const Verify = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [showExplanation, setShowExplanation] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [showTasks, setShowTasks] = useState(false);
+  const [discordAuthed, setDiscordAuthed] = useState(false);
 
   const reward = searchParams.get('reward');
   const quantity = searchParams.get('quantity');
@@ -33,8 +37,10 @@ const Verify = () => {
 
   const handleVerifyNow = () => {
     setIsVerifying(true);
-    
-    // Simulate verification process
+    setShowTasks(true);
+  };
+
+  const handleTasksComplete = () => {
     setTimeout(() => {
       const params = new URLSearchParams({
         reward: reward || '',
@@ -42,10 +48,40 @@ const Verify = () => {
         type: type || ''
       });
       navigate(`/success?${params.toString()}`);
-    }, 3000);
+    }, 2000);
   };
 
   const explanationText = `Because people abused our website with bots and fake requests, we ran out of stock multiple times. To keep our service free and fair for everyone, we now require human verification. This quick process helps us ensure real users get real rewards!`;
+
+  if (showTasks) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-900 to-slate-900">
+        {/* Header */}
+        <header className="container mx-auto px-4 py-6">
+          <nav className="flex items-center space-x-4">
+            <Button 
+              variant="ghost" 
+              onClick={() => setShowTasks(false)}
+              className="text-gray-400 hover:text-white"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+            <div className="flex items-center space-x-2">
+              <Gift className="h-8 w-8 text-purple-400" />
+              <h1 className="text-2xl font-bold text-white">NitroVault</h1>
+            </div>
+          </nav>
+        </header>
+
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            <VerificationTasks onAllTasksComplete={handleTasksComplete} />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-900 to-slate-900">
@@ -116,6 +152,11 @@ const Verify = () => {
               </div>
             </CardContent>
           </Card>
+
+          {/* Discord Auth Section */}
+          <div className="mb-8">
+            <DiscordAuthButton />
+          </div>
 
           {/* Verification Warning */}
           <Card className="bg-yellow-500/10 border-yellow-500/30 mb-8">
