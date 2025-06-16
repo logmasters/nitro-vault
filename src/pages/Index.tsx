@@ -1,16 +1,17 @@
 
 import { useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Gift, Zap, Star, Users, Shield, CheckCircle } from "lucide-react";
 import { StatsCounter } from "@/components/StatsCounter";
 import { RealisticRewardFeed } from "@/components/RealisticRewardFeed";
+import { DiscordAuthButton } from "@/components/DiscordAuthButton";
+import { VerificationTasks } from "@/components/VerificationTasks";
 import { logger } from "@/utils/logger";
 
 const Index = () => {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
@@ -21,10 +22,6 @@ const Index = () => {
     
     logger.logVisit(userId, username, referralCode || undefined);
   }, [searchParams]);
-
-  const handleGetReward = (type: 'nitro' | 'robux') => {
-    navigate(`/rewards?type=${type}`);
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-900 to-slate-900">
@@ -53,29 +50,22 @@ const Index = () => {
             Free Discord Nitro & Robux
           </h2>
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Get premium Discord Nitro and Robux rewards instantly. No login required, just complete quick verification.
+            Get premium Discord Nitro and Robux rewards instantly. Complete verification below to claim your rewards.
           </p>
+        </div>
+      </section>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
-            <Button
-              onClick={() => handleGetReward('nitro')}
-              size="lg"
-              className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white px-12 py-6 text-xl font-semibold rounded-xl shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105"
-            >
-              <Gift className="mr-3 h-6 w-6" />
-              Get Discord Nitro
-            </Button>
-            
-            <Button
-              onClick={() => handleGetReward('robux')}
-              size="lg"
-              className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-12 py-6 text-xl font-semibold rounded-xl shadow-2xl hover:shadow-green-500/25 transition-all duration-300 hover:scale-105"
-            >
-              <Zap className="mr-3 h-6 w-6" />
-              Get Robux
-            </Button>
-          </div>
+      {/* Discord Auth Section */}
+      <section className="container mx-auto px-4 py-8">
+        <div className="max-w-2xl mx-auto">
+          <DiscordAuthButton />
+        </div>
+      </section>
+
+      {/* Verification Section */}
+      <section className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          <VerificationTasks onAllTasksComplete={() => {}} />
         </div>
       </section>
 

