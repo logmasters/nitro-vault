@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,16 +6,18 @@ import { Badge } from "@/components/ui/badge";
 import { Gift, Zap, Star, Users, Shield, CheckCircle, Clock, MessageCircle } from "lucide-react";
 import { StatsCounter } from "@/components/StatsCounter";
 import { RealisticRewardFeed } from "@/components/RealisticRewardFeed";
-import { DiscordAuthButton } from "@/components/DiscordAuthButton";
 import { VerificationTasks } from "@/components/VerificationTasks";
+import { RewardPopup } from "@/components/RewardPopup";
+import { RewardSelector } from "@/components/RewardSelector";
 import { logger } from "@/utils/logger";
 
-type PageState = 'landing' | 'verification' | 'processing' | 'success';
+type PageState = 'landing' | 'reward-selection' | 'verification' | 'processing' | 'success';
 
 const Index = () => {
   const [searchParams] = useSearchParams();
   const [currentState, setCurrentState] = useState<PageState>('landing');
   const [showProcessing, setShowProcessing] = useState(false);
+  const [selectedReward, setSelectedReward] = useState<any>(null);
 
   useEffect(() => {
     // Log visit and handle referrals
@@ -28,6 +29,11 @@ const Index = () => {
   }, [searchParams]);
 
   const handleStartVerification = () => {
+    setCurrentState('reward-selection');
+  };
+
+  const handleRewardSelected = (reward: any) => {
+    setSelectedReward(reward);
     setCurrentState('verification');
   };
 
@@ -110,6 +116,26 @@ const Index = () => {
     </div>
   );
 
+  const renderRewardSelectionPage = () => (
+    <div className="animate-fade-in">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          <RewardSelector onRewardSelect={handleRewardSelected} />
+          
+          <div className="text-center mt-8">
+            <Button
+              onClick={() => setCurrentState('landing')}
+              variant="outline"
+              className="border-gray-600 text-gray-300 hover:bg-gray-800"
+            >
+              ← Back to Home
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderVerificationPage = () => (
     <div className="animate-fade-in">
       <div className="container mx-auto px-4 py-8">
@@ -118,10 +144,9 @@ const Index = () => {
             <h2 className="text-4xl font-bold text-white mb-4 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
               Complete Verification
             </h2>
-            <p className="text-gray-300 text-lg">Follow the steps below to claim your rewards</p>
+            <p className="text-gray-300 text-lg">Follow the steps below to claim your {selectedReward?.name}</p>
           </div>
 
-          <DiscordAuthButton />
           <VerificationTasks onAllTasksComplete={handleAllTasksComplete} />
         </div>
       </div>
@@ -180,14 +205,11 @@ const Index = () => {
               <CheckCircle className="h-24 w-24 text-green-500 mx-auto mb-8" />
               <h3 className="text-4xl font-bold text-white mb-6">Congratulations! 🎉</h3>
               <p className="text-green-300 text-xl mb-8">
-                Your rewards have been successfully processed and should be available in your account shortly!
+                Your {selectedReward?.name} has been successfully processed and should be available in your account shortly!
               </p>
               <div className="space-y-4">
                 <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-lg px-6 py-2">
-                  ✅ Discord Nitro Activated
-                </Badge>
-                <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-lg px-6 py-2">
-                  💎 Robux Added to Account
+                  ✅ {selectedReward?.name} Activated
                 </Badge>
               </div>
               <Button
@@ -205,6 +227,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-900 to-slate-900">
+      {/* Popup Ad */}
+      <RewardPopup />
+
       {/* Header */}
       <header className="container mx-auto px-4 py-6">
         <nav className="flex items-center justify-between">
@@ -225,6 +250,7 @@ const Index = () => {
 
       {/* Dynamic Content Based on State */}
       {currentState === 'landing' && renderLandingPage()}
+      {currentState === 'reward-selection' && renderRewardSelectionPage()}
       {currentState === 'verification' && renderVerificationPage()}
       {currentState === 'processing' && renderProcessingPage()}
       {currentState === 'success' && renderSuccessPage()}
