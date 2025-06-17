@@ -18,19 +18,28 @@ export const RealisticRewardFeed = () => {
   const [claims, setClaims] = useState<RewardClaim[]>([]);
 
   const realisticUsernames = [
-    "rizzmachine69", "slattbabyjay", "urfav.jaylen", "itzz.kaykay", "clutchzay",
-    "nahfrlilbro", "snaggy.jr", "trapbby.ari", "yeatpackin", "dripzach",
-    "notxavier", "yxng.tr3", "sheluv.ty", "builtlike._dat", "crybby.lex",
-    "qvwn.kiara", "d1.zo", "spazzyrex", "javiongotgame", "tootrill.chris",
-    "6ixshaquille", "onmymomma.liljay", "vsco.jenni", "icedout.chase", "fye.breezy",
-    "zoowop.nah", "trendy.tay", "dwnbad.marq", "realslime.milo", "ggitskev",
-    
-    "lucas_gamer07", "sophia.roblox123", "jayden_fortnitegod", "ava.minecrafterx",
-    "noob_master444", "emily_plays_games", "ethan.levelup", "gamerboy321",
-    "chloe_builds", "ryan_on_switch",
+  "rizzmachine69", "slattbabyjay", "urfav.jaylen", "itzz.kaykay", "clutchzay",
+  "nahfrlilbro", "snaggy.jr", "trapbby.ari", "yeatpackin", "dripzach",
+  "notxavier", "yxng.tr3", "sheluv.ty", "builtlike._dat", "crybby.lex",
+  "qvwn.kiara", "d1.zo", "spazzyrex", "javiongotgame", "tootrill.chris",
+  
+  "lucas_gamer07", "sophia.roblox123", "jayden_fortnitegod", "ava.minecrafterx",
+  "noob_master444", "emily_plays_games", "ethan.levelup", "gamerboy321",
+  "chloe_builds", "ryan_on_switch",
 
-    "coolkid22", "bestuser2023", "john_doe99", "sweetangel12", "crazycatlover",
-    "funny_memer99", "that_one_kid", "its_me_matt", "rebelgirl14", "jackplaysyt"
+  "coolkid22", "bestuser2023", "john_doe99", "sweetangel12", "crazycatlover",
+  "funny_memer99", "that_one_kid", "its_me_matt", "rebelgirl14", "jackplaysyt",
+
+  "wizz", "leao", "milo", "zelo", "nova", "drex", "ayce", "javi", "zeno", "rezi",
+  
+  "rajdeep_op", "pratham.xd", "arjun.gamerz", "desiboi.143", "manav_no_scope",
+  "rahulmlg", "indian_sniper", "xX_kunal_Xx", "shivamking", "itz.aryan12",
+  
+  "xinli_plays", "liwei2009", "jackie_ch1", "zhangzhu88", "xiaofan.cool",
+  "boop_cheng", "jingjing_123", "xiaoyu2008", "chen_theboss", "wongfortnite",
+
+  "steve_rpg99", "diamond_miner", "block_lord69", "gta_lilcj", "mc_builder_yo",
+  "robloxian_god", "thehood_legend", "craftysam", "xX_NetherXx", "tnt_maniac"
   ];
 
   const nitroRewards = [
