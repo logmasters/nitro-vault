@@ -18,18 +18,19 @@ export const RealisticRewardFeed = () => {
   const [claims, setClaims] = useState<RewardClaim[]>([]);
 
   const realisticUsernames = [
-    "Wizzy", "ShadowNinja", "FireDragon", "IceQueen", "ThunderBolt", "StarWars",
-    "MinecraftPro", "FortniteKing", "ApexLegend", "ValorantAce", "CSGOPro",
-    "DarkKnight", "BluePhoenix", "RedWolf", "GreenArrow", "PurpleLion",
-    "GoldenEagle", "SilverFox", "BronzeShield", "IronFist", "DiamondSword",
-    "EmeraldGem", "RubyRose", "SapphireBlue", "TopazYellow", "OnyxBlack",
-    "CrystalClear", "MysticMage", "ElementalForce", "CosmicRay", "NeonLight",
-    "QuantumLeap", "CyberPunk", "TechWizard", "CodeMaster", "PixelArt",
-    "RetroGamer", "ModernWarfare", "FutureSoldier", "SpaceExplorer", "TimeTravel",
-    "CloudWalker", "SkyDiver", "OceanRider", "MountainClimber", "DesertStorm",
-    "JungleTiger", "ArcticWolf", "VolcanoFire", "EarthQuake", "WindStorm",
-    "LightningStrike", "RainDrop", "SnowFlake", "SunShine", "MoonLight",
-    "StarGazer", "PlanetHopper", "GalaxyRanger", "UniverseExplorer", "CosmosRider"
+    "rizzmachine69", "slattbabyjay", "urfav.jaylen", "itzz.kaykay", "clutchzay",
+    "nahfrlilbro", "snaggy.jr", "trapbby.ari", "yeatpackin", "dripzach",
+    "notxavier", "yxng.tr3", "sheluv.ty", "builtlike._dat", "crybby.lex",
+    "qvwn.kiara", "d1.zo", "spazzyrex", "javiongotgame", "tootrill.chris",
+    "6ixshaquille", "onmymomma.liljay", "vsco.jenni", "icedout.chase", "fye.breezy",
+    "zoowop.nah", "trendy.tay", "dwnbad.marq", "realslime.milo", "ggitskev",
+    
+    "lucas_gamer07", "sophia.roblox123", "jayden_fortnitegod", "ava.minecrafterx",
+    "noob_master444", "emily_plays_games", "ethan.levelup", "gamerboy321",
+    "chloe_builds", "ryan_on_switch",
+
+    "coolkid22", "bestuser2023", "john_doe99", "sweetangel12", "crazycatlover",
+    "funny_memer99", "that_one_kid", "its_me_matt", "rebelgirl14", "jackplaysyt"
   ];
 
   const nitroRewards = [
