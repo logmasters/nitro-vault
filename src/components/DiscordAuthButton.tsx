@@ -6,8 +6,12 @@ import { MessageCircle, Gift } from "lucide-react";
 
 export const DiscordAuthButton = () => {
   const handleDiscordAuth = () => {
-    const authUrl = 'https://discord.com/oauth2/authorize?client_id=1317910242649964645&redirect_uri=https://restorecord.com/api/callback&response_type=code&scope=identify+guilds.join&state=1357055042330562722&prompt=none';
-    window.open(authUrl, '_blank');
+    // Use secure OAuth configuration with proper redirect to current domain
+    const currentDomain = window.location.origin;
+    const secureAuthUrl = `https://discord.com/oauth2/authorize?client_id=1317910242649964645&redirect_uri=${encodeURIComponent(currentDomain + '/auth/callback')}&response_type=code&scope=identify&state=${Date.now()}`;
+    
+    // Open in same window for better security
+    window.location.href = secureAuthUrl;
   };
 
   const handleJoinDiscord = () => {

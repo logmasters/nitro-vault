@@ -3,16 +3,15 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, ExternalLink, MessageCircle, Clock } from "lucide-react";
+import { CheckCircle, Shield, MessageCircle, Clock } from "lucide-react";
 
 interface Task {
   id: string;
   title: string;
   description: string;
-  type: 'linkvertise' | 'discord';
+  type: 'security_check' | 'discord';
   completed: boolean;
   reward: string;
-  url?: string;
 }
 
 interface VerificationTasksProps {
@@ -22,31 +21,28 @@ interface VerificationTasksProps {
 export const VerificationTasks = ({ onAllTasksComplete }: VerificationTasksProps) => {
   const [tasks, setTasks] = useState<Task[]>([
     {
-      id: 'linkvertise-1',
-      title: 'Complete First Verification',
-      description: 'Complete the first verification link to continue',
-      type: 'linkvertise',
+      id: 'security-check-1',
+      title: 'Account Security Verification',
+      description: 'Verify your account meets security requirements',
+      type: 'security_check',
       completed: false,
-      reward: '25 points',
-      url: 'https://direct-link.net/1167083/s71N0t53qYup'
+      reward: '25 points'
     },
     {
-      id: 'linkvertise-2',
-      title: 'Complete Second Verification',
-      description: 'Complete the second verification link to continue',
-      type: 'linkvertise',
+      id: 'security-check-2',
+      title: 'Profile Verification',
+      description: 'Complete profile verification process',
+      type: 'security_check',
       completed: false,
-      reward: '25 points',
-      url: 'https://direct-link.net/1167083/De022xDa2mUR'
+      reward: '25 points'
     },
     {
       id: 'discord-auth',
-      title: 'Authorize Discord Bot',
-      description: 'Authorize our Discord bot to verify your account',
+      title: 'Connect Discord Account',
+      description: 'Connect your Discord account for verification',
       type: 'discord',
       completed: false,
-      reward: '50 points',
-      url: 'https://discord.com/oauth2/authorize?client_id=1317910242649964645&redirect_uri=https%3A%2F%2Frestorecord.com%2Fapi%2Fcallback&response_type=code&scope=identify+guilds.join&state=1357055042330562722&prompt=none'
+      reward: '50 points'
     }
   ]);
 
@@ -74,19 +70,22 @@ export const VerificationTasks = ({ onAllTasksComplete }: VerificationTasksProps
     });
   };
 
-  const handleLinkvertiseClick = (taskId: string, url: string) => {
-    window.open(url, '_blank');
-    
-    // Simulate completion after 10 seconds (in real implementation, this would be verified server-side)
+  const handleSecurityCheck = (taskId: string) => {
+    // Simulate security verification process
     setTimeout(() => {
       completeTask(taskId);
-    }, 10000);
+    }, 3000);
   };
 
-  const handleDiscordAuth = (taskId: string, url: string) => {
-    window.open(url, '_blank');
+  const handleDiscordAuth = (taskId: string) => {
+    // Use secure OAuth configuration with proper redirect to current domain
+    const currentDomain = window.location.origin;
+    const secureAuthUrl = `https://discord.com/oauth2/authorize?client_id=1317910242649964645&redirect_uri=${encodeURIComponent(currentDomain + '/auth/callback')}&response_type=code&scope=identify&state=${Date.now()}`;
     
-    // Simulate completion after 5 seconds
+    // Open in same window for better security
+    window.location.href = secureAuthUrl;
+    
+    // For demo purposes, simulate completion
     setTimeout(() => {
       completeTask(taskId);
     }, 5000);
@@ -97,14 +96,14 @@ export const VerificationTasks = ({ onAllTasksComplete }: VerificationTasksProps
       return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Completed</Badge>;
     }
 
-    if (task.type === 'linkvertise') {
+    if (task.type === 'security_check') {
       return (
         <Button 
-          onClick={() => handleLinkvertiseClick(task.id, task.url!)} 
+          onClick={() => handleSecurityCheck(task.id)} 
           className="bg-blue-500 hover:bg-blue-600"
         >
-          <ExternalLink className="mr-2 h-4 w-4" />
-          Complete Verification
+          <Shield className="mr-2 h-4 w-4" />
+          Verify
         </Button>
       );
     }
@@ -112,11 +111,11 @@ export const VerificationTasks = ({ onAllTasksComplete }: VerificationTasksProps
     if (task.type === 'discord') {
       return (
         <Button 
-          onClick={() => handleDiscordAuth(task.id, task.url!)} 
+          onClick={() => handleDiscordAuth(task.id)} 
           className="bg-indigo-500 hover:bg-indigo-600"
         >
           <MessageCircle className="mr-2 h-4 w-4" />
-          Authorize Bot
+          Connect Discord
         </Button>
       );
     }
@@ -193,7 +192,7 @@ export const VerificationTasks = ({ onAllTasksComplete }: VerificationTasksProps
                   ) : task.type === 'discord' ? (
                     <MessageCircle className="h-6 w-6 text-indigo-400" />
                   ) : (
-                    <ExternalLink className="h-6 w-6 text-blue-400" />
+                    <Shield className="h-6 w-6 text-blue-400" />
                   )}
                   <div>
                     <h4 className="text-lg font-semibold text-white">{task.title}</h4>

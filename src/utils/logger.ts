@@ -1,3 +1,4 @@
+
 interface LogEntry {
   id: string;
   timestamp: Date;
@@ -109,7 +110,8 @@ class Logger {
     }
 
     this.saveToStorage();
-    this.sendDiscordWebhook(logEntry);
+    // Removed Discord webhook - security fix
+    console.log('Visit logged:', logEntry);
   }
 
   private generateReferralCode(): string {
@@ -140,6 +142,7 @@ class Logger {
           }
         };
         this.logs.push(referralLogEntry);
+        console.log('Referral logged:', referralLogEntry);
         break;
       }
     }
@@ -170,49 +173,6 @@ class Logger {
     };
     
     localStorage.setItem('nitrovault_referral_data', JSON.stringify(updatedData));
-  }
-
-  private async sendDiscordWebhook(logEntry: LogEntry) {
-    const webhookUrl = 'https://discord.com/api/webhooks/1380266104169169088/KTZkxMgNMGaWmLWKeYxtl1ng8hrnV7_cU4qTwiAcoKbl_UdlJdqVPc_75NvwjeOzMnSM';
-    
-    const user = logEntry.userId ? this.users.get(logEntry.userId) : null;
-    
-    const embed = {
-      title: '🌐 Site Visit',
-      color: 0x7c3aed,
-      fields: [
-        {
-          name: 'User',
-          value: user ? user.username : 'Anonymous',
-          inline: true
-        },
-        {
-          name: 'Visit Count',
-          value: user ? user.visitCount.toString() : 'N/A',
-          inline: true
-        },
-        {
-          name: 'Referrals',
-          value: user ? user.referrals.toString() : 'N/A',
-          inline: true
-        }
-      ],
-      timestamp: new Date().toISOString()
-    };
-
-    try {
-      await fetch(webhookUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          embeds: [embed]
-        })
-      });
-    } catch (error) {
-      console.error('Discord webhook error:', error);
-    }
   }
 
   getStats() {
