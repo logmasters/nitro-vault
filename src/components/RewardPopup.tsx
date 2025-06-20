@@ -20,7 +20,7 @@ export const RewardPopup = () => {
   if (!isOpen) return null;
 
   const handleJoinServer = () => {
-    window.open('https://discord.gg/nitrovault', '_blank');
+    window.open('https://discord.gg/qHp8SjPDXN', '_blank');
     setIsOpen(false);
   };
 
