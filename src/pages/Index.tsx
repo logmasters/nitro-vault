@@ -17,13 +17,13 @@ const Index = () => {
   const [currentState, setCurrentState] = useState<PageState>('landing');
   const [showProcessing, setShowProcessing] = useState(false);
   const [selectedReward, setSelectedReward] = useState<any>(null);
+
   useEffect(() => {
     // Log visit and handle referrals
     const referralCode = searchParams.get('ref');
-    const userId = 'anonymous-' + Date.now();
-    const username = 'Anonymous User';
-    logger.logVisit(userId, username, referralCode || undefined);
+    logger.logVisit(referralCode || undefined);
   }, [searchParams]);
+
   const handleStartVerification = () => {
     setCurrentState('reward-selection');
   };
@@ -203,7 +203,8 @@ const Index = () => {
         </div>
       </div>
     </div>;
-  return <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-900 to-slate-900">
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-900 to-slate-900">
       {/* Popup Ad */}
       <RewardPopup />
 
@@ -263,6 +264,8 @@ const Index = () => {
             </div>
           </div>
         </footer>}
-    </div>;
+    </div>
+  );
 };
+
 export default Index;

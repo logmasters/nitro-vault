@@ -5,12 +5,15 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Copy, Users, Gift, Share2, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { logger } from "@/utils/logger";
+
 interface ReferralData {
   code: string;
   referrals: number;
   rewards: number;
   totalEarned: number;
 }
+
 export const ReferralSystem = () => {
   const [referralData, setReferralData] = useState<ReferralData>({
     code: '',
@@ -19,33 +22,46 @@ export const ReferralSystem = () => {
     totalEarned: 0
   });
   const [copied, setCopied] = useState(false);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
 
-  // Generate or load referral code
   useEffect(() => {
+    // Get referral data from logger and localStorage
+    const user = logger.getCurrentUser();
     const savedData = localStorage.getItem('nitrovault_referral_data');
-    if (savedData) {
-      setReferralData(JSON.parse(savedData));
-    } else {
-      const newCode = generateReferralCode();
-      const newData = {
-        code: newCode,
-        referrals: 0,
-        rewards: 0,
-        totalEarned: 0
-      };
-      setReferralData(newData);
-      localStorage.setItem('nitrovault_referral_data', JSON.stringify(newData));
+    
+    if (user) {
+      const parsedData = savedData ? JSON.parse(savedData) : {};
+      setReferralData({
+        code: user.referralCode,
+        referrals: user.referrals,
+        rewards: parsedData.rewards || 0,
+        totalEarned: parsedData.totalEarned || 0
+      });
     }
+
+    // Update referral data every 5 seconds to sync with logger
+    const interval = setInterval(() => {
+      const currentUser = logger.getCurrentUser();
+      const currentSavedData = localStorage.getItem('nitrovault_referral_data');
+      
+      if (currentUser) {
+        const currentParsedData = currentSavedData ? JSON.parse(currentSavedData) : {};
+        setReferralData(prev => ({
+          code: currentUser.referralCode,
+          referrals: currentUser.referrals,
+          rewards: currentParsedData.rewards || prev.rewards,
+          totalEarned: currentParsedData.totalEarned || prev.totalEarned
+        }));
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
-  const generateReferralCode = (): string => {
-    return 'NV' + Math.random().toString(36).substr(2, 6).toUpperCase();
-  };
+
   const getReferralLink = (): string => {
-    return `${window.location.origin}?ref=${referralData.code}`;
+    return logger.getReferralLink();
   };
+
   const copyReferralLink = async () => {
     try {
       await navigator.clipboard.writeText(getReferralLink());
@@ -63,6 +79,7 @@ export const ReferralSystem = () => {
       });
     }
   };
+
   const shareReferralLink = async () => {
     const shareData = {
       title: 'Join NitroVault - Free Discord Nitro & Robux!',
@@ -79,6 +96,7 @@ export const ReferralSystem = () => {
       copyReferralLink();
     }
   };
+
   const rewardTiers = [{
     referrals: 1,
     reward: "Discord Nitro Basic (1 Month)"
@@ -95,7 +113,9 @@ export const ReferralSystem = () => {
     referrals: 25,
     reward: "Discord Nitro Boost (1 Year)"
   }];
-  return <div className="max-w-4xl mx-auto space-y-6">
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div className="text-center">
         <h2 className="text-3xl font-bold text-white mb-4 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
@@ -135,27 +155,43 @@ export const ReferralSystem = () => {
       </div>
 
       {/* Referral Link */}
-      <Card className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-purple-500/30 bg-zinc-500">
+      <Card className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-purple-500/30">
         <CardHeader>
           <CardTitle className="text-white flex items-center">
             <Share2 className="mr-2 h-5 w-5" />
             Your Referral Link
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 bg-zinc-500">
+        <CardContent className="space-y-4">
           <div className="flex items-center space-x-2">
-            <Input value={getReferralLink()} readOnly className="bg-gray-800/50 border-gray-600 text-white" />
-            <Button onClick={copyReferralLink} variant="outline" size="icon" className="border-gray-600 hover:bg-gray-700">
+            <Input 
+              value={getReferralLink()} 
+              readOnly 
+              className="bg-gray-800/50 border-gray-600 text-white" 
+            />
+            <Button 
+              onClick={copyReferralLink} 
+              variant="outline" 
+              size="icon" 
+              className="border-gray-600 hover:bg-gray-700"
+            >
               {copied ? <Check className="h-4 w-4 text-green-400" /> : <Copy className="h-4 w-4" />}
             </Button>
           </div>
           
           <div className="flex flex-col sm:flex-row gap-3">
-            <Button onClick={copyReferralLink} className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+            <Button 
+              onClick={copyReferralLink} 
+              className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+            >
               <Copy className="mr-2 h-4 w-4" />
               Copy Link
             </Button>
-            <Button onClick={shareReferralLink} variant="outline" className="flex-1 border-gray-600 text-gray-300 bg-zinc-500 hover:bg-zinc-400">
+            <Button 
+              onClick={shareReferralLink} 
+              variant="outline" 
+              className="flex-1 border-gray-600 text-gray-300 bg-zinc-500 hover:bg-zinc-400"
+            >
               <Share2 className="mr-2 h-4 w-4" />
               Share Link
             </Button>
@@ -225,5 +261,6 @@ export const ReferralSystem = () => {
           </div>
         </CardContent>
       </Card>
-    </div>;
+    </div>
+  );
 };
