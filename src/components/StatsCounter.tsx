@@ -11,12 +11,18 @@ export const StatsCounter = () => {
   });
 
   useEffect(() => {
-    // Initialize with saved stats or default values
+    // Initialize with higher baseline stats
     const initialStats = logger.getStats();
+    const baselineStats = {
+      totalRewards: 15000, // Start with 15k rewards
+      activeUsers: 1200,   // Start with 1.2k users
+      rewardsToday: 350    // Start with 350 rewards today
+    };
+
     setStats({
-      totalRewards: initialStats.totalRewards || Math.floor(Math.random() * 5000) + 10000,
-      activeUsers: initialStats.activeUsers || Math.floor(Math.random() * 500) + 800,
-      rewardsToday: initialStats.rewardsToday || Math.floor(Math.random() * 100) + 200
+      totalRewards: Math.max(baselineStats.totalRewards, initialStats.totalRewards || baselineStats.totalRewards),
+      activeUsers: Math.max(baselineStats.activeUsers, initialStats.activeUsers || baselineStats.activeUsers),
+      rewardsToday: Math.max(baselineStats.rewardsToday, initialStats.rewardsToday || baselineStats.rewardsToday)
     });
 
     // Update stats from logger every 5 seconds
@@ -24,7 +30,7 @@ export const StatsCounter = () => {
       const currentStats = logger.getStats();
       setStats(prev => ({
         totalRewards: Math.max(prev.totalRewards, currentStats.totalRewards || prev.totalRewards),
-        activeUsers: Math.max(1, currentStats.activeUsers || prev.activeUsers),
+        activeUsers: Math.max(prev.activeUsers, currentStats.activeUsers || prev.activeUsers),
         rewardsToday: Math.max(prev.rewardsToday, currentStats.rewardsToday || prev.rewardsToday)
       }));
     }, 5000);

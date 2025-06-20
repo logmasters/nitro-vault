@@ -18,19 +18,89 @@ interface UserData {
   referralCode: string;
 }
 
+interface RateLimitData {
+  ip: string;
+  visits: number;
+  lastVisit: number;
+  blocked: boolean;
+  blockExpiry?: number;
+}
+
 class Logger {
   private logs: LogEntry[] = [];
   private users: Map<string, UserData> = new Map();
+  private rateLimits: Map<string, RateLimitData> = new Map();
   private stats = {
-    totalRewards: 0,
-    activeUsers: 0,
-    rewardsToday: 0,
+    totalRewards: 15000,  // Start with higher baseline
+    activeUsers: 1200,    // Start with higher baseline
+    rewardsToday: 350,    // Start with higher baseline
     totalVisits: 0
   };
 
   constructor() {
     this.loadFromStorage();
     this.startStatsUpdater();
+    this.cleanupExpiredBlocks();
+  }
+
+  private getClientIP(): string {
+    // Simple client fingerprinting for rate limiting
+    const userAgent = navigator.userAgent;
+    const screen = `${window.screen.width}x${window.screen.height}`;
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return btoa(userAgent + screen + timezone).substring(0, 16);
+  }
+
+  private isRateLimited(): boolean {
+    const clientIP = this.getClientIP();
+    const now = Date.now();
+    const rateLimit = this.rateLimits.get(clientIP);
+
+    if (rateLimit && rateLimit.blocked && rateLimit.blockExpiry && now < rateLimit.blockExpiry) {
+      console.warn('Rate limited: Too many requests. Please wait before refreshing.');
+      return true;
+    }
+
+    if (!rateLimit) {
+      this.rateLimits.set(clientIP, {
+        ip: clientIP,
+        visits: 1,
+        lastVisit: now,
+        blocked: false
+      });
+      return false;
+    }
+
+    // Check if within 1 minute window
+    if (now - rateLimit.lastVisit < 60000) {
+      rateLimit.visits++;
+      if (rateLimit.visits > 10) { // More than 10 visits per minute
+        rateLimit.blocked = true;
+        rateLimit.blockExpiry = now + 300000; // Block for 5 minutes
+        console.warn('Rate limit exceeded. Access blocked for 5 minutes.');
+        this.saveRateLimits();
+        return true;
+      }
+    } else {
+      // Reset counter after 1 minute
+      rateLimit.visits = 1;
+    }
+
+    rateLimit.lastVisit = now;
+    this.saveRateLimits();
+    return false;
+  }
+
+  private cleanupExpiredBlocks() {
+    const now = Date.now();
+    for (const [ip, rateLimit] of this.rateLimits.entries()) {
+      if (rateLimit.blocked && rateLimit.blockExpiry && now >= rateLimit.blockExpiry) {
+        rateLimit.blocked = false;
+        rateLimit.blockExpiry = undefined;
+        rateLimit.visits = 0;
+      }
+    }
+    this.saveRateLimits();
   }
 
   private loadFromStorage() {
@@ -38,6 +108,7 @@ class Logger {
       const savedLogs = localStorage.getItem('nitrovault_logs');
       const savedUsers = localStorage.getItem('nitrovault_users');
       const savedStats = localStorage.getItem('nitrovault_stats');
+      const savedRateLimits = localStorage.getItem('nitrovault_rate_limits');
 
       if (savedLogs) {
         this.logs = JSON.parse(savedLogs);
@@ -47,7 +118,18 @@ class Logger {
         this.users = new Map(usersArray);
       }
       if (savedStats) {
-        this.stats = JSON.parse(savedStats);
+        const loadedStats = JSON.parse(savedStats);
+        // Ensure stats never go below baseline
+        this.stats = {
+          totalRewards: Math.max(15000, loadedStats.totalRewards || 15000),
+          activeUsers: Math.max(1200, loadedStats.activeUsers || 1200),
+          rewardsToday: Math.max(350, loadedStats.rewardsToday || 350),
+          totalVisits: loadedStats.totalVisits || 0
+        };
+      }
+      if (savedRateLimits) {
+        const rateLimitsArray = JSON.parse(savedRateLimits);
+        this.rateLimits = new Map(rateLimitsArray);
       }
     } catch (error) {
       console.error('Error loading from storage:', error);
@@ -64,18 +146,34 @@ class Logger {
     }
   }
 
+  private saveRateLimits() {
+    try {
+      localStorage.setItem('nitrovault_rate_limits', JSON.stringify(Array.from(this.rateLimits.entries())));
+    } catch (error) {
+      console.error('Error saving rate limits:', error);
+    }
+  }
+
   private startStatsUpdater() {
-    // Update stats every 30 seconds to simulate growth
+    // Update stats every 30 seconds to simulate growth, ensuring they never decrease
     setInterval(() => {
-      this.stats.totalRewards += Math.floor(Math.random() * 3);
-      this.stats.activeUsers += Math.floor(Math.random() * 5) - 2;
-      this.stats.rewardsToday += Math.floor(Math.random() * 2);
-      this.stats.activeUsers = Math.max(1, this.stats.activeUsers);
+      const increment = Math.floor(Math.random() * 3) + 1; // Always add at least 1
+      this.stats.totalRewards += increment;
+      this.stats.activeUsers += Math.floor(Math.random() * 5) - 1; // Can fluctuate slightly
+      this.stats.rewardsToday += Math.floor(Math.random() * 2) + 1; // Always add at least 1
+      
+      // Ensure minimums are maintained
+      this.stats.activeUsers = Math.max(1200, this.stats.activeUsers);
       this.saveToStorage();
     }, 30000);
   }
 
   logVisit(userId?: string, username?: string, referralCode?: string) {
+    // Check rate limiting first
+    if (this.isRateLimited()) {
+      return; // Don't log if rate limited
+    }
+
     const logEntry: LogEntry = {
       id: `visit-${Date.now()}`,
       timestamp: new Date(),
@@ -110,7 +208,6 @@ class Logger {
     }
 
     this.saveToStorage();
-    // Removed Discord webhook - security fix
     console.log('Visit logged:', logEntry);
   }
 
