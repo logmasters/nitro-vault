@@ -197,7 +197,7 @@ const Index = () => {
         <ReferralSystem />
         
         <div className="text-center mt-8">
-          <Button onClick={() => setCurrentState('landing')} variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-800">
+          <Button onClick={() => setCurrentState('landing')} variant="outline" className="border-gray-600 text-gray-300 bg-zinc-500 hover:bg-zinc-400">
             ← Back to Home
           </Button>
         </div>
