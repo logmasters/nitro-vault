@@ -8,9 +8,12 @@ import { StatsCounter } from "@/components/StatsCounter";
 import { RealisticRewardFeed } from "@/components/RealisticRewardFeed";
 import { VerificationTasks } from "@/components/VerificationTasks";
 import { RewardPopup } from "@/components/RewardPopup";
+import { LinkvertisePopup } from "@/components/LinkvertisePopup";
+import { LovablePopup } from "@/components/LovablePopup";
 import { RewardSelector } from "@/components/RewardSelector";
 import { logger } from "@/utils/logger";
 import { ReferralSystem } from "@/components/ReferralSystem";
+
 type PageState = 'landing' | 'reward-selection' | 'verification' | 'processing' | 'success' | 'referrals';
 const Index = () => {
   const [searchParams] = useSearchParams();
@@ -205,8 +208,10 @@ const Index = () => {
     </div>;
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-900 to-slate-900">
-      {/* Popup Ad */}
+      {/* Popup Ads */}
       <RewardPopup />
+      <LinkvertisePopup />
+      <LovablePopup />
 
       {/* Header */}
       <header className="container mx-auto px-4 py-6">
