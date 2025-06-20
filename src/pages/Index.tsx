@@ -11,45 +11,36 @@ import { RewardPopup } from "@/components/RewardPopup";
 import { RewardSelector } from "@/components/RewardSelector";
 import { logger } from "@/utils/logger";
 import { ReferralSystem } from "@/components/ReferralSystem";
-
 type PageState = 'landing' | 'reward-selection' | 'verification' | 'processing' | 'success' | 'referrals';
-
 const Index = () => {
   const [searchParams] = useSearchParams();
   const [currentState, setCurrentState] = useState<PageState>('landing');
   const [showProcessing, setShowProcessing] = useState(false);
   const [selectedReward, setSelectedReward] = useState<any>(null);
-
   useEffect(() => {
     // Log visit and handle referrals
     const referralCode = searchParams.get('ref');
     const userId = 'anonymous-' + Date.now();
     const username = 'Anonymous User';
-    
     logger.logVisit(userId, username, referralCode || undefined);
   }, [searchParams]);
-
   const handleStartVerification = () => {
     setCurrentState('reward-selection');
   };
-
   const handleRewardSelected = (reward: any) => {
     setSelectedReward(reward);
     setCurrentState('verification');
   };
-
   const handleAllTasksComplete = () => {
     setCurrentState('processing');
     setShowProcessing(true);
-    
+
     // After processing, show success
     setTimeout(() => {
       setCurrentState('success');
     }, 30000);
   };
-
-  const renderLandingPage = () => (
-    <div className="animate-fade-in">
+  const renderLandingPage = () => <div className="animate-fade-in">
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 text-center">
         <div className="max-w-4xl mx-auto">
@@ -59,11 +50,7 @@ const Index = () => {
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
             Get premium Discord Nitro and Robux rewards instantly. Complete verification below to claim your rewards.
           </p>
-          <Button
-            onClick={handleStartVerification}
-            size="lg"
-            className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white px-12 py-6 text-xl font-semibold rounded-full shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105"
-          >
+          <Button onClick={handleStartVerification} size="lg" className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white px-12 py-6 text-xl font-semibold rounded-full shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105">
             <Gift className="mr-3 h-6 w-6" />
             Claim Your Rewards Now
           </Button>
@@ -114,31 +101,21 @@ const Index = () => {
           <RealisticRewardFeed />
         </div>
       </section>
-    </div>
-  );
-
-  const renderRewardSelectionPage = () => (
-    <div className="animate-fade-in">
+    </div>;
+  const renderRewardSelectionPage = () => <div className="animate-fade-in">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <RewardSelector onRewardSelect={handleRewardSelected} />
           
           <div className="text-center mt-8">
-            <Button
-              onClick={() => setCurrentState('landing')}
-              variant="outline"
-              className="border-gray-600 text-gray-300 hover:bg-gray-800"
-            >
+            <Button onClick={() => setCurrentState('landing')} variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-800">
               ← Back to Home
             </Button>
           </div>
         </div>
       </div>
-    </div>
-  );
-
-  const renderVerificationPage = () => (
-    <div className="animate-fade-in">
+    </div>;
+  const renderVerificationPage = () => <div className="animate-fade-in">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-8">
           <div className="text-center">
@@ -151,11 +128,8 @@ const Index = () => {
           <VerificationTasks onAllTasksComplete={handleAllTasksComplete} />
         </div>
       </div>
-    </div>
-  );
-
-  const renderProcessingPage = () => (
-    <div className="animate-fade-in">
+    </div>;
+  const renderProcessingPage = () => <div className="animate-fade-in">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-2xl mx-auto">
           <Card className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border-yellow-500/30">
@@ -194,11 +168,8 @@ const Index = () => {
           </Card>
         </div>
       </div>
-    </div>
-  );
-
-  const renderSuccessPage = () => (
-    <div className="animate-fade-in">
+    </div>;
+  const renderSuccessPage = () => <div className="animate-fade-in">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-2xl mx-auto text-center">
           <Card className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-green-500/30">
@@ -213,39 +184,26 @@ const Index = () => {
                   ✅ {selectedReward?.name} Activated
                 </Badge>
               </div>
-              <Button
-                onClick={() => setCurrentState('landing')}
-                className="mt-8 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-8 py-3"
-              >
+              <Button onClick={() => setCurrentState('landing')} className="mt-8 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-8 py-3">
                 Return to Home
               </Button>
             </CardContent>
           </Card>
         </div>
       </div>
-    </div>
-  );
-
-  const renderReferralsPage = () => (
-    <div className="animate-fade-in">
+    </div>;
+  const renderReferralsPage = () => <div className="animate-fade-in">
       <div className="container mx-auto px-4 py-8">
         <ReferralSystem />
         
         <div className="text-center mt-8">
-          <Button
-            onClick={() => setCurrentState('landing')}
-            variant="outline"
-            className="border-gray-600 text-gray-300 hover:bg-gray-800"
-          >
+          <Button onClick={() => setCurrentState('landing')} variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-800">
             ← Back to Home
           </Button>
         </div>
       </div>
-    </div>
-  );
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-900 to-slate-900">
+    </div>;
+  return <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-900 to-slate-900">
       {/* Popup Ad */}
       <RewardPopup />
 
@@ -257,11 +215,7 @@ const Index = () => {
             <h1 className="text-2xl font-bold text-white">NitroVault</h1>
           </div>
           <div className="flex items-center space-x-4">
-            <Button
-              onClick={() => setCurrentState('referrals')}
-              variant="outline"
-              className="border-purple-500/50 text-purple-300 hover:bg-purple-500/20"
-            >
+            <Button onClick={() => setCurrentState('referrals')} variant="outline" className="border-purple-500/50 text-purple-300 bg-zinc-500 hover:bg-zinc-400">
               <Users className="mr-2 h-4 w-4" />
               Referrals
             </Button>
@@ -284,8 +238,7 @@ const Index = () => {
       {currentState === 'referrals' && renderReferralsPage()}
 
       {/* Footer - Only show on landing page */}
-      {currentState === 'landing' && (
-        <footer className="container mx-auto px-4 py-12 border-t border-gray-800">
+      {currentState === 'landing' && <footer className="container mx-auto px-4 py-12 border-t border-gray-800">
           <div className="text-center">
             <div className="flex items-center justify-center space-x-2 mb-4">
               <Gift className="h-6 w-6 text-purple-400" />
@@ -309,10 +262,7 @@ const Index = () => {
               </Badge>
             </div>
           </div>
-        </footer>
-      )}
-    </div>
-  );
+        </footer>}
+    </div>;
 };
-
 export default Index;
