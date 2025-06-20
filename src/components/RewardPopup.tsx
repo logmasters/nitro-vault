@@ -1,38 +1,25 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Gift, X, ExternalLink, Zap } from "lucide-react";
-
 export const RewardPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
-
   useEffect(() => {
     // Show popup after 15 seconds
     const timer = setTimeout(() => {
       setIsOpen(true);
     }, 15000);
-
     return () => clearInterval(timer);
   }, []);
-
   if (!isOpen) return null;
-
   const handleJoinServer = () => {
     window.open('https://discord.gg/qHp8SjPDXN', '_blank');
     setIsOpen(false);
   };
-
-  return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+  return <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
       <Card className="bg-gradient-to-br from-purple-900/90 to-indigo-900/90 border-purple-500/50 max-w-md w-full relative animate-scale-in">
-        <Button
-          onClick={() => setIsOpen(false)}
-          variant="ghost"
-          size="sm"
-          className="absolute right-2 top-2 text-gray-400 hover:text-white"
-        >
+        <Button onClick={() => setIsOpen(false)} variant="ghost" size="sm" className="absolute right-2 top-2 text-gray-400 hover:text-white">
           <X className="h-4 w-4" />
         </Button>
         
@@ -58,23 +45,15 @@ export const RewardPopup = () => {
           </div>
 
           <div className="space-y-3">
-            <Button
-              onClick={handleJoinServer}
-              className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-semibold py-3"
-            >
+            <Button onClick={handleJoinServer} className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-semibold py-3">
               <ExternalLink className="mr-2 h-4 w-4" />
               Join Discord Server
             </Button>
-            <Button
-              onClick={() => setIsOpen(false)}
-              variant="outline"
-              className="w-full border-gray-600 text-gray-300 hover:bg-gray-800"
-            >
+            <Button onClick={() => setIsOpen(false)} variant="outline" className="w-full border-gray-600 text-gray-300 bg-zinc-500 hover:bg-zinc-400">
               Maybe Later
             </Button>
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
