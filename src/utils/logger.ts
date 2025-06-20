@@ -1,4 +1,3 @@
-
 interface LogEntry {
   id: string;
   timestamp: Date;
@@ -103,9 +102,9 @@ class Logger {
       user.lastVisit = new Date();
       this.users.set(userId, user);
 
-      // Handle referral
+      // Handle referral with rewards
       if (referralCode && referralCode !== user.referralCode) {
-        this.handleReferral(referralCode, userId);
+        this.handleReferral(referralCode, userId, username);
       }
     }
 
@@ -114,17 +113,63 @@ class Logger {
   }
 
   private generateReferralCode(): string {
-    return Math.random().toString(36).substr(2, 8).toUpperCase();
+    return 'NV' + Math.random().toString(36).substr(2, 6).toUpperCase();
   }
 
-  private handleReferral(referralCode: string, newUserId: string) {
+  private handleReferral(referralCode: string, newUserId: string, newUsername: string) {
+    // Find the referrer
     for (const [userId, user] of this.users.entries()) {
       if (user.referralCode === referralCode) {
         user.referrals++;
         this.users.set(userId, user);
+        
+        // Update referral data in localStorage
+        this.updateReferralRewards(userId, user.referrals);
+        
+        // Log successful referral
+        const referralLogEntry: LogEntry = {
+          id: `referral-${Date.now()}`,
+          timestamp: new Date(),
+          type: 'referral',
+          userId: newUserId,
+          username: newUsername,
+          data: { 
+            referrerUserId: userId,
+            referrerUsername: user.username,
+            referralCode 
+          }
+        };
+        this.logs.push(referralLogEntry);
         break;
       }
     }
+  }
+
+  private updateReferralRewards(userId: string, referralCount: number) {
+    const referralData = JSON.parse(localStorage.getItem('nitrovault_referral_data') || '{}');
+    
+    // Calculate rewards based on referral count
+    const rewardTiers = [1, 3, 5, 10, 25];
+    const rewardValues = [10, 30, 50, 100, 250]; // Dollar values
+    
+    let totalRewards = 0;
+    let totalValue = 0;
+    
+    rewardTiers.forEach((tier, index) => {
+      if (referralCount >= tier) {
+        totalRewards++;
+        totalValue += rewardValues[index];
+      }
+    });
+    
+    const updatedData = {
+      ...referralData,
+      referrals: referralCount,
+      rewards: totalRewards,
+      totalEarned: totalValue
+    };
+    
+    localStorage.setItem('nitrovault_referral_data', JSON.stringify(updatedData));
   }
 
   private async sendDiscordWebhook(logEntry: LogEntry) {
@@ -181,6 +226,18 @@ class Logger {
   getReferralLink(userId: string): string {
     const user = this.users.get(userId);
     return user ? `${window.location.origin}?ref=${user.referralCode}` : '';
+  }
+
+  getReferralStats(referralCode: string) {
+    for (const [userId, user] of this.users.entries()) {
+      if (user.referralCode === referralCode) {
+        return {
+          referrals: user.referrals,
+          username: user.username
+        };
+      }
+    }
+    return null;
   }
 }
 

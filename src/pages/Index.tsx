@@ -10,8 +10,9 @@ import { VerificationTasks } from "@/components/VerificationTasks";
 import { RewardPopup } from "@/components/RewardPopup";
 import { RewardSelector } from "@/components/RewardSelector";
 import { logger } from "@/utils/logger";
+import { ReferralSystem } from "@/components/ReferralSystem";
 
-type PageState = 'landing' | 'reward-selection' | 'verification' | 'processing' | 'success';
+type PageState = 'landing' | 'reward-selection' | 'verification' | 'processing' | 'success' | 'referrals';
 
 const Index = () => {
   const [searchParams] = useSearchParams();
@@ -225,6 +226,24 @@ const Index = () => {
     </div>
   );
 
+  const renderReferralsPage = () => (
+    <div className="animate-fade-in">
+      <div className="container mx-auto px-4 py-8">
+        <ReferralSystem />
+        
+        <div className="text-center mt-8">
+          <Button
+            onClick={() => setCurrentState('landing')}
+            variant="outline"
+            className="border-gray-600 text-gray-300 hover:bg-gray-800"
+          >
+            ← Back to Home
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-900 to-slate-900">
       {/* Popup Ad */}
@@ -238,6 +257,14 @@ const Index = () => {
             <h1 className="text-2xl font-bold text-white">NitroVault</h1>
           </div>
           <div className="flex items-center space-x-4">
+            <Button
+              onClick={() => setCurrentState('referrals')}
+              variant="outline"
+              className="border-purple-500/50 text-purple-300 hover:bg-purple-500/20"
+            >
+              <Users className="mr-2 h-4 w-4" />
+              Referrals
+            </Button>
             <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
               ✅ 100% Free
             </Badge>
@@ -254,6 +281,7 @@ const Index = () => {
       {currentState === 'verification' && renderVerificationPage()}
       {currentState === 'processing' && renderProcessingPage()}
       {currentState === 'success' && renderSuccessPage()}
+      {currentState === 'referrals' && renderReferralsPage()}
 
       {/* Footer - Only show on landing page */}
       {currentState === 'landing' && (
