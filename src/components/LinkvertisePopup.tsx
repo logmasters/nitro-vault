@@ -10,10 +10,20 @@ export const LinkvertisePopup = () => {
 
   useEffect(() => {
     const checkAndShowPopup = () => {
+      // Check if any other popup is currently open
+      const otherPopupsOpen = document.querySelector('[data-popup-type]');
+      if (otherPopupsOpen) return;
+
+      // Check last popup time to ensure 2 minute delay between popups
+      const lastPopupTime = localStorage.getItem('lastPopupTime');
+      const now = Date.now();
+      if (lastPopupTime && now - parseInt(lastPopupTime) < 120000) return; // 2 minutes
+
       // 15% chance to show popup
       const shouldShow = Math.random() < 0.15;
       if (shouldShow) {
         setIsOpen(true);
+        localStorage.setItem('lastPopupTime', now.toString());
       }
     };
 
@@ -37,7 +47,7 @@ export const LinkvertisePopup = () => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" data-popup-type="linkvertise">
       <Card className="bg-gradient-to-br from-green-900/90 to-emerald-900/90 border-green-500/50 max-w-md w-full relative animate-scale-in">
         <Button 
           onClick={() => setIsOpen(false)} 

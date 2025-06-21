@@ -10,6 +10,7 @@ import { VerificationTasks } from "@/components/VerificationTasks";
 import { RewardPopup } from "@/components/RewardPopup";
 import { LinkvertisePopup } from "@/components/LinkvertisePopup";
 import { LovablePopup } from "@/components/LovablePopup";
+import { MicrosoftRewardsPopup } from "@/components/MicrosoftRewardsPopup";
 import { RewardSelector } from "@/components/RewardSelector";
 import { logger } from "@/utils/logger";
 import { ReferralSystem } from "@/components/ReferralSystem";
@@ -212,6 +213,7 @@ const Index = () => {
       <RewardPopup />
       <LinkvertisePopup />
       <LovablePopup />
+      <MicrosoftRewardsPopup />
 
       {/* Header */}
       <header className="container mx-auto px-4 py-6">
